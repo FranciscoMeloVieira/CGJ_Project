@@ -19,8 +19,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
+#include <vector>
 
 #include "../mgl/mgl.hpp"
+
+
+typedef struct {
+    GLfloat XYZW[4];
+    GLfloat RGBA[4];
+} Vertex;
+
+typedef struct {
+    Vertex* vertices;
+	int vertex_count;
+    GLubyte* indices;
+	int index_count;
+    GLuint vao, vbo[2];
+} Shape;
+
 
 ////////////////////////////////////////////////////////////////////////// MYAPP
 
@@ -39,11 +55,14 @@ private:
   GLuint VaoId, VboId[2];
   std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
   GLint MatrixId;
+  std::vector<Shape> shapes;
 
   void createShaderProgram();
   void createBufferObjects();
+  void createShapeBuffers(Shape& shape);
   void destroyBufferObjects();
   void drawScene();
+  void drawShape(const Shape& shape, const glm::mat4& transform);
 };
 
 //////////////////////////////////////////////////////////////////////// SHADERs
@@ -64,54 +83,77 @@ void MyApp::createShaderProgram() {
 
 //////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-typedef struct {
-  GLfloat XYZW[4];
-  GLfloat RGBA[4];
-} Vertex;
 
 const Vertex Vertices[] = {
-    {{0.25f, 0.25f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-    {{0.75f, 0.25f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{0.50f, 0.75f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}};
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+    {{1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+    {{0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}};
+
+const Vertex Vertices2[] = {
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}} };
 
 const GLubyte Indices[] = {0, 1, 2};
 
 void MyApp::createBufferObjects() {
-  glGenVertexArrays(1, &VaoId);
-  glBindVertexArray(VaoId);
-  {
-    glGenBuffers(2, VboId);
+	auto shape = std::make_unique<Shape>();
+	shape->vertices = const_cast<Vertex*>(Vertices);
+	shape->vertex_count = 3;
+    shape->indices = const_cast<GLubyte*>(Indices);
+	shape->index_count = 3;
+    createShapeBuffers(*shape);
+	shapes.push_back(*shape);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
+	auto shape2 = std::make_unique<Shape>();
+	shape2->vertices = const_cast<Vertex*>(Vertices2);
+    shape2->vertex_count = 3;
+	shape2->indices = const_cast<GLubyte*>(Indices);
+    shape2->index_count = 3;
+	createShapeBuffers(*shape2);
+	shapes.push_back(*shape2);
+}
+
+void MyApp::createShapeBuffers(Shape& shape) {
+    glGenVertexArrays(1, &shape.vao);
+    glBindVertexArray(shape.vao);
     {
-      glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(POSITION);
-      glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                            reinterpret_cast<GLvoid *>(0));
-      glEnableVertexAttribArray(COLOR);
-      glVertexAttribPointer(
-          COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-          reinterpret_cast<GLvoid *>(sizeof(Vertices[0].XYZW)));
+        glGenBuffers(2, shape.vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, shape.vbo[0]);
+        {
+            glBufferData(GL_ARRAY_BUFFER, shape.vertex_count * sizeof(Vertex), shape.vertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(POSITION);
+            glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                reinterpret_cast<GLvoid*>(0));
+            glEnableVertexAttribArray(COLOR);
+            glVertexAttribPointer(
+                COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                reinterpret_cast<GLvoid*>(sizeof(shape.vertices[0].XYZW)));
+        }
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shape.vbo[1]);
+        {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(shape.indices), shape.indices,
+                GL_STATIC_DRAW);
+        }
     }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
-    {
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices,
-                   GL_STATIC_DRAW);
-    }
-  }
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glDeleteBuffers(2, VboId);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDeleteBuffers(2, shape.vbo);
 }
 
 void MyApp::destroyBufferObjects() {
-  glBindVertexArray(VaoId);
-  glDisableVertexAttribArray(POSITION);
-  glDisableVertexAttribArray(COLOR);
-  glDeleteVertexArrays(1, &VaoId);
-  glBindVertexArray(0);
+    for (auto& shape : shapes) {
+        glBindVertexArray(shape.vao);
+        glDisableVertexAttribArray(POSITION);
+        glDisableVertexAttribArray(COLOR);
+
+        glDeleteBuffers(2, shape.vbo);      // delete VBOs
+        glDeleteVertexArrays(1, &shape.vao); // delete VAO
+    }
+    glBindVertexArray(0);
 }
+
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
@@ -122,19 +164,20 @@ const glm::mat4 M =
 void MyApp::drawScene() {
   // Drawing directly in clip space
 
-  glBindVertexArray(VaoId);
-  Shaders->bind();
+	drawShape(shapes[0], M);
+	drawShape(shapes[1], I);
+}
 
-  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(I));
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE,
-                 reinterpret_cast<GLvoid *>(0));
+void MyApp::drawShape(const Shape& shape, const glm::mat4& transform) {
+    glBindVertexArray(shape.vao);
+    Shaders->bind();
 
-  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(M));
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE,
-                 reinterpret_cast<GLvoid *>(0));
+    glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(transform));
+    glDrawElements(GL_TRIANGLES, shape.index_count, GL_UNSIGNED_BYTE,
+        reinterpret_cast<GLvoid*>(0));
 
-  Shaders->unbind();
-  glBindVertexArray(0);
+    Shaders->unbind();
+    glBindVertexArray(0);
 }
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -158,7 +201,7 @@ int main(int argc, char *argv[]) {
   mgl::Engine &engine = mgl::Engine::getInstance();
   engine.setApp(new MyApp());
   engine.setOpenGL(4, 6);
-  engine.setWindow(600, 600, "Hello Modern 2D World", 0, 1);
+  engine.setWindow(1000, 1000, "Hello Modern 2D World", 0, 1);
   engine.init();
   engine.run();
   exit(EXIT_SUCCESS);
