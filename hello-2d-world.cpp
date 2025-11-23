@@ -84,34 +84,59 @@ void MyApp::createShaderProgram() {
 //////////////////////////////////////////////////////////////////// VAOs & VBOs
 
 
-const Vertex Vertices[] = {
+const Vertex Triangle_Vertices[] = {
     {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
     {{1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
     {{0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}};
 
-const Vertex Vertices2[] = {
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}} };
+const GLubyte Triangle_Indices[] = { 0, 1, 2 };
 
-const GLubyte Indices[] = {0, 1, 2};
+const Vertex Square_Vertices[] = {
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+	{{0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f} }
+};
+
+const GLubyte Square_Indices[] = { 0, 1, 2, 0, 2, 3};
+
+const Vertex Parallelogram_Vertices[] = {
+    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{1.5f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{0.5f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
+};
+
+const GLubyte Parallelogram_Indices[] = { 0, 1, 2, 0, 2, 3 };
 
 void MyApp::createBufferObjects() {
-	auto shape = std::make_unique<Shape>();
-	shape->vertices = const_cast<Vertex*>(Vertices);
-	shape->vertex_count = 3;
-    shape->indices = const_cast<GLubyte*>(Indices);
-	shape->index_count = 3;
-    createShapeBuffers(*shape);
-	shapes.push_back(*shape);
 
-	auto shape2 = std::make_unique<Shape>();
-	shape2->vertices = const_cast<Vertex*>(Vertices2);
-    shape2->vertex_count = 3;
-	shape2->indices = const_cast<GLubyte*>(Indices);
-    shape2->index_count = 3;
-	createShapeBuffers(*shape2);
-	shapes.push_back(*shape2);
+	// Triangle
+	auto triangle = std::make_unique<Shape>();
+	triangle->vertices = const_cast<Vertex*>(Triangle_Vertices);
+    triangle->vertex_count = 3;
+    triangle->indices = const_cast<GLubyte*>(Triangle_Indices);
+    triangle->index_count = 3;
+    createShapeBuffers(*triangle);
+	shapes.push_back(*triangle);
+
+	// Square
+	auto square = std::make_unique<Shape>();
+    square->vertices = const_cast<Vertex*>(Square_Vertices);
+    square->vertex_count = 4;
+    square->indices = const_cast<GLubyte*>(Square_Indices);
+    square->index_count = 6;
+	createShapeBuffers(*square);
+	shapes.push_back(*square);
+
+	// Parallelogram
+    auto parallelogram = std::make_unique<Shape>();
+    parallelogram->vertices = const_cast<Vertex*>(Parallelogram_Vertices);
+    parallelogram->vertex_count = 4;
+    parallelogram->indices = const_cast<GLubyte*>(Parallelogram_Indices);
+	parallelogram->index_count = 6;
+    createShapeBuffers(*parallelogram);
+	shapes.push_back(*parallelogram);
 }
 
 void MyApp::createShapeBuffers(Shape& shape) {
@@ -148,8 +173,8 @@ void MyApp::destroyBufferObjects() {
         glDisableVertexAttribArray(POSITION);
         glDisableVertexAttribArray(COLOR);
 
-        glDeleteBuffers(2, shape.vbo);      // delete VBOs
-        glDeleteVertexArrays(1, &shape.vao); // delete VAO
+        glDeleteBuffers(2, shape.vbo);
+        glDeleteVertexArrays(1, &shape.vao);
     }
     glBindVertexArray(0);
 }
@@ -166,6 +191,7 @@ void MyApp::drawScene() {
 
 	drawShape(shapes[0], M);
 	drawShape(shapes[1], I);
+	drawShape(shapes[2], glm::translate(I, glm::vec3(-0.5f, -1.0f, 0.0f)));
 }
 
 void MyApp::drawShape(const Shape& shape, const glm::mat4& transform) {
