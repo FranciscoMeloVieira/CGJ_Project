@@ -85,26 +85,26 @@ void MyApp::createShaderProgram() {
 
 
 const Vertex Triangle_Vertices[] = {
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-    {{0.0f, 1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}};
+    {{-0.333333f, -0.333333f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+    {{ 0.666667f, -0.333333f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+    {{-0.333333f,  0.666667f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}};
 
 const GLubyte Triangle_Indices[] = { 0, 1, 2 };
 
 const Vertex Square_Vertices[] = {
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-	{{0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f} }
+    {{-0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{ 0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{ 0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+	{{-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f} }
 };
 
 const GLubyte Square_Indices[] = { 0, 1, 2, 0, 2, 3};
 
 const Vertex Parallelogram_Vertices[] = {
-    {{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{1.5f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{0.5f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
+    {{-0.75f, -0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{ 0.25f, -0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{ 0.75f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{-0.25f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
 };
 
 const GLubyte Parallelogram_Indices[] = { 0, 1, 2, 0, 2, 3 };
@@ -182,16 +182,14 @@ void MyApp::destroyBufferObjects() {
 
 ////////////////////////////////////////////////////////////////////////// SCENE
 
+// Transformation Matrices
 const glm::mat4 I(1.0f);
-const glm::mat4 M =
-    glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
+
 
 void MyApp::drawScene() {
   // Drawing directly in clip space
 
-	drawShape(shapes[0], M);
-	drawShape(shapes[1], I);
-	drawShape(shapes[2], glm::translate(I, glm::vec3(-0.5f, -1.0f, 0.0f)));
+    drawShape(shapes[2], I);
 }
 
 void MyApp::drawShape(const Shape& shape, const glm::mat4& transform) {
