@@ -27,5 +27,21 @@
     <ClCompile Include="Libraries\mgl\mglShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Shape2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shape2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="clip-fs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="clip-vs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

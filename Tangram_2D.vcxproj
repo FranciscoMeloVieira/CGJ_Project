@@ -143,6 +143,14 @@ xcopy /y $(SolutionDir)libraries\glfw\lib-vc2022\glfw3.dll $(OutDir)
     <ClCompile Include="Libraries\mgl\mglApp.cpp" />
     <ClCompile Include="Libraries\mgl\mglError.cpp" />
     <ClCompile Include="Libraries\mgl\mglShader.cpp" />
+    <ClCompile Include="Shape2D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shape2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="clip-fs.glsl" />
+    <None Include="clip-vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
