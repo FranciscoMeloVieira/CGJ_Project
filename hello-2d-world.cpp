@@ -193,7 +193,7 @@ const float global_scale = 0.5f;
 
 
 // Square calculations
-// Constants
+// Variables
 const float square_side = 0.5f * global_scale * glm::length(glm::vec2(Square_Vertices[1].XYZW[0] - Square_Vertices[0].XYZW[0], Square_Vertices[1].XYZW[1] - Square_Vertices[0].XYZW[1]));
 
 const float square_diagonal = glm::sqrt(2 * glm::pow(square_side, 2));
@@ -205,7 +205,7 @@ const float square_y_offset = 0.0f;
 
 
 // First triangle calculations
-// Constants
+// Variables
 const float triangle_side = global_scale * glm::length(
     glm::vec2(Triangle_Vertices[1].XYZW[0] - Triangle_Vertices[0].XYZW[0],
 	Triangle_Vertices[1].XYZW[1] - Triangle_Vertices[0].XYZW[1]));
@@ -227,7 +227,7 @@ const float first_triangle_y_offset = -(triangle_side - centroid) + square_y_off
 
 
 // Second triangle calculations
-// Constants
+// Variables
 const float second_triangle_side = 0.5f * triangle_side;
 
 const float second_triangle_hypotenuse = glm::sqrt(glm::pow(second_triangle_side, 2) * 2);
@@ -245,12 +245,13 @@ const float second_triangle_y_offset = (triangle_side + (second_triangle_hypoten
 
 
 // Third triangle calculations
-// Constants
+// Variables
 const float third_triangle_hypotenuse = triangle_hypotenuse;
 
 const float third_triangle_centroid_diagonal = triangle_centroid_diagonal;
 
 const float third_triangle_height = triangle_height;
+
 // Positioning
 const float third_triangle_x_offset = third_triangle_hypotenuse / 2 + square_x_offset;
 
@@ -258,7 +259,7 @@ const float third_triangle_y_offset = -(square_diagonal / 2 - (third_triangle_he
 
 
 // Fourth triangle calculations
-// Constants
+// Variables
 const float fourth_triangle_side = triangle_side * 2/3;
 
 const float fourth_triangle_centroid = (fourth_triangle_side / 3);
@@ -270,7 +271,7 @@ const float fourth_triangle_y_offset = (fourth_triangle_side - fourth_triangle_c
 
 
 // Fifth triangle calculations
-// Constants
+// Variables
 const float fifth_triangle_side = second_triangle_side;
 
 const float fifth_triangle_hypotenuse = second_triangle_hypotenuse;
@@ -286,7 +287,7 @@ const float fifth_triangle_y_offset = -(fifth_triangle_height - (fourth_triangle
 
 
 //Parallelogram
-// Constants
+// Variables
 const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1]) * global_scale / 4;
 
 // Positioning
