@@ -188,7 +188,9 @@ void MyApp::destroyBufferObjects() {
 ////////////////////////////////////////////////////////////////////////// SCENE
 
 // Calculations
+// Center of the Tangram is the square center. Moving the square moves the entire Tangram.
 const float global_scale = 0.5f;
+
 
 // Square calculations
 // Constants
@@ -243,10 +245,16 @@ const float second_triangle_y_offset = (triangle_side + (second_triangle_hypoten
 
 
 // Third triangle calculations
-// Positioning
-const float third_triangle_x_offset = triangle_hypotenuse / 2 + square_x_offset;
+// Constants
+const float third_triangle_hypotenuse = triangle_hypotenuse;
 
-const float third_triangle_y_offset = -(square_diagonal / 2 - (triangle_height - triangle_centroid_diagonal)) + square_y_offset;
+const float third_triangle_centroid_diagonal = triangle_centroid_diagonal;
+
+const float third_triangle_height = triangle_height;
+// Positioning
+const float third_triangle_x_offset = third_triangle_hypotenuse / 2 + square_x_offset;
+
+const float third_triangle_y_offset = -(square_diagonal / 2 - (third_triangle_height - third_triangle_centroid_diagonal)) + square_y_offset;
 
 
 // Fourth triangle calculations
@@ -276,6 +284,7 @@ const float fifth_triangle_x_offset = -(fourth_triangle_side - fourth_triangle_c
 
 const float fifth_triangle_y_offset = -(fifth_triangle_height - (fourth_triangle_centroid + (fifth_triangle_height - fifth_triangle_centroid_diagonal))) + fourth_triangle_y_offset;
 
+
 //Parallelogram
 // Constants
 const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1]) * global_scale / 4;
@@ -284,6 +293,8 @@ const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallel
 const float parallelogram_x_offset = (triangle_side - centroid / 2) + first_triangle_x_offset;
 
 const float parallelogram_y_offset = -(centroid + parallelogram_heigth / 2) + first_triangle_y_offset;
+
+
 
 // Transformation Matrices
 const glm::mat4 I(1.0f);
