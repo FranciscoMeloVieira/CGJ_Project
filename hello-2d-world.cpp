@@ -190,6 +190,17 @@ void MyApp::destroyBufferObjects() {
 // Calculations
 const float global_scale = 0.5f;
 
+// Square calculations
+// Constants
+const float square_side = 0.5f * global_scale * glm::length(glm::vec2(Square_Vertices[1].XYZW[0] - Square_Vertices[0].XYZW[0], Square_Vertices[1].XYZW[1] - Square_Vertices[0].XYZW[1]));
+
+const float square_diagonal = glm::sqrt(2 * glm::pow(square_side, 2));
+
+// Positioning
+const float square_x_offset = 0.0f;
+
+const float square_y_offset = 0.0f;
+
 
 // First triangle calculations
 // Constants
@@ -208,19 +219,9 @@ const float triangle_centroid_diagonal = glm::sqrt(2 * glm::pow(centroid, 2));
 const float triangle_top_vertex_position = Triangle_Vertices[2].XYZW[1] * global_scale - 0.5f;
 
 // Positioning
-const float first_triangle_y_offset = -0.5f;
+const float first_triangle_x_offset = -(square_diagonal / 2 - centroid) + square_x_offset;
 
-
-// Square calculations
-// Constants
-const float square_side = 0.5f * triangle_side;
-
-const float square_diagonal = glm::sqrt(2 * glm::pow(square_side, 2));
-
-// Positioning
-const float square_x_offset = square_diagonal / 2 - centroid;
-
-const float square_y_offset = -centroid;
+const float first_triangle_y_offset = -(triangle_side - centroid) + square_y_offset;
 
 
 // Second triangle calculations
@@ -236,16 +237,16 @@ const float second_triangle_height = glm::sqrt(glm::pow(second_triangle_side, 2)
 const float second_triangle_centroid_diagonal = glm::sqrt(2 * glm::pow(second_triangle_centroid, 2));
 
 // Positioning
-const float second_triangle_x_offset = -(centroid - (second_triangle_height - second_triangle_centroid_diagonal));
+const float second_triangle_x_offset = -(centroid - (second_triangle_height - second_triangle_centroid_diagonal)) + first_triangle_x_offset;
 
-const float second_triangle_y_offset = second_triangle_hypotenuse / 2 - centroid;
+const float second_triangle_y_offset = (triangle_side + (second_triangle_hypotenuse / 2 - centroid)) + first_triangle_y_offset;
 
 
 // Third triangle calculations
 // Positioning
-const float third_triangle_x_offset = triangle_hypotenuse / 2 + (square_x_offset);
+const float third_triangle_x_offset = triangle_hypotenuse / 2 + square_x_offset;
 
-const float third_triangle_y_offset = -(square_diagonal / 2 + glm::abs(triangle_top_vertex_position + (triangle_height - triangle_centroid_diagonal)));
+const float third_triangle_y_offset = -(square_diagonal / 2 - (triangle_height - triangle_centroid_diagonal)) + square_y_offset;
 
 
 // Fourth triangle calculations
@@ -277,20 +278,20 @@ const float fifth_triangle_y_offset = -(fifth_triangle_height - (fourth_triangle
 
 //Parallelogram
 // Constants
-const float parallelogram_heigth = Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1] * global_scale / 4;
+const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1]) * global_scale / 4;
 
 // Positioning
-const float parallelogram_x_offset = triangle_side - centroid / 2;
+const float parallelogram_x_offset = (triangle_side - centroid / 2) + first_triangle_x_offset;
 
-const float parallelogram_y_offset = -(centroid + parallelogram_heigth);
+const float parallelogram_y_offset = -(centroid + parallelogram_heigth / 2) + first_triangle_y_offset;
 
 // Transformation Matrices
 const glm::mat4 I(1.0f);
-const glm::mat4 global_rotation = glm::mat4_cast(glm::quat(glm::radians(glm::vec3(0.0f, 0.0f, 0.0f))));
+const glm::mat4 global_rotation = glm::mat4_cast(glm::quat(glm::radians(glm::vec3(0.0f, 0.0f, 10.0f))));
 
 const glm::mat4 first_triangle_transform = 
     global_rotation
-    * glm::mat4(glm::translate(I, glm::vec3(-0.0f, first_triangle_y_offset, 0.0f)))
+    * glm::mat4(glm::translate(I, glm::vec3(first_triangle_x_offset, first_triangle_y_offset, 0.0f)))
 	* glm::mat4_cast(glm::quat(glm::radians(glm::vec3(0.0f, 0.0f, 0.0f))))
 	* glm::mat4(glm::scale(I, glm::vec3(global_scale, global_scale, 1.0f)));
 
