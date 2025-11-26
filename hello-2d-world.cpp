@@ -44,6 +44,7 @@ private:
   GLuint VaoId, VboId[2];
   std::unique_ptr<mgl::ShaderProgram> Shaders = nullptr;
   GLint MatrixId;
+  GLint ColorId; // Added: location/index for the Color uniform
   std::vector<Shape2D> shapes;
 
   void createShaderProgram();
@@ -61,11 +62,16 @@ void MyApp::createShaderProgram() {
 
   Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, POSITION);
   Shaders->addAttribute(mgl::COLOR_ATTRIBUTE, COLOR);
+
+  // Register both uniforms used by the application
   Shaders->addUniform("Matrix");
+  Shaders->addUniform("Color");
 
   Shaders->create();
 
+  // Retrieve uniform locations/indices after program creation
   MatrixId = Shaders->Uniforms["Matrix"].index;
+  ColorId = Shaders->Uniforms["Color"].index; 
 }
 
 //////////////////////////////////////////////////////////////////// VAOs & VBOs
@@ -277,36 +283,50 @@ const glm::mat4 parallelogram_transform =
 
 
 void MyApp::drawScene() {
-  // Drawing directly in clip space
-	Shaders->bind();
+  // 1) Clear buffers
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// TRIANGLES
-    glBindVertexArray(shapes[TRIANGLE].get_vao());
-    glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(first_triangle_transform));
-    shapes[TRIANGLE].draw();
-	glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(second_triangle_transform));
-	shapes[TRIANGLE].draw();
-    glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(third_triangle_transform));
-    shapes[TRIANGLE].draw();
-	glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fourth_triangle_transform));
-	shapes[TRIANGLE].draw();
-	glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fifth_triangle_transform));
-    shapes[TRIANGLE].draw();
+  // 2) Use shader program
+  Shaders->bind();
 
-	// SQUARE
-    glBindVertexArray(shapes[SQUARE].get_vao());
-    glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(square_transform));
-	shapes[SQUARE].draw();
+  // TRIANGLES (use vec4 color with alpha = 1.0f)
+  glBindVertexArray(shapes[TRIANGLE].get_vao());
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(first_triangle_transform));
+  glUniform4f(ColorId, 1.0f, 0.0f, 0.0f, 1.0f); // Red (opaque)
+  shapes[TRIANGLE].draw();
 
-	// PARALLELOGRAM
-	glBindVertexArray(shapes[PARALLELOGRAM].get_vao());
-	glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(parallelogram_transform));
-	shapes[PARALLELOGRAM].draw();
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(second_triangle_transform));
+  glUniform4f(ColorId, 0.0f, 1.0f, 0.0f, 1.0f); // Green (opaque)
+  shapes[TRIANGLE].draw();
 
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(third_triangle_transform));
+  glUniform4f(ColorId, 0.0f, 0.0f, 1.0f, 1.0f); // Blue (opaque)
+  shapes[TRIANGLE].draw();
 
-	Shaders->unbind();
-	glBindVertexArray(0);
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fourth_triangle_transform));
+  glUniform4f(ColorId, 1.0f, 1.0f, 0.0f, 1.0f); // Yellow (opaque)
+  shapes[TRIANGLE].draw();
 
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fifth_triangle_transform));
+  glUniform4f(ColorId, 1.0f, 0.0f, 1.0f, 1.0f); // Magenta (opaque)
+  shapes[TRIANGLE].draw();
+
+  // SQUARE
+  glBindVertexArray(shapes[SQUARE].get_vao());
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(square_transform));
+  glUniform4f(ColorId, 0.0f, 1.0f, 1.0f, 1.0f); // Cyan (opaque)
+  shapes[SQUARE].draw();
+
+  // PARALLELOGRAM
+  glBindVertexArray(shapes[PARALLELOGRAM].get_vao());
+  glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(parallelogram_transform));
+  glUniform4f(ColorId, 1.0f, 1.0f, 1.0f, 1.0f); // White (opaque)
+  shapes[PARALLELOGRAM].draw();
+
+  // Unbind
+  Shaders->unbind();
+  glBindVertexArray(0);
 }
 
 
