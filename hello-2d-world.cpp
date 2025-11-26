@@ -94,10 +94,10 @@ const Vertex Square_Vertices[] = {
 const GLubyte Square_Indices[] = { 0, 1, 2, 0, 2, 3};
 
 const Vertex Parallelogram_Vertices[] = {
-    {{-0.25f, -0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{ 0.75f, -0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{ 0.25f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{-0.75f,  0.5f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
+    {{-0.353553f, -0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{ 1.060660f, -0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{ 0.353553f,  0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{-1.060660f,  0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
 };
 
 const GLubyte Parallelogram_Indices[] = { 0, 1, 2, 0, 2, 3 };
@@ -225,7 +225,7 @@ const float fifth_triangle_y_offset = -(fifth_triangle_height - (fourth_triangle
 
 //Parallelogram
 // Variables
-const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1]) * global_scale / 4;
+const float parallelogram_heigth = (Parallelogram_Vertices[2].XYZW[1] - Parallelogram_Vertices[0].XYZW[1]) * global_scale / 2;
 
 // Positioning
 const float parallelogram_x_offset = (triangle_side - centroid / 2) + first_triangle_x_offset;
@@ -279,49 +279,45 @@ const glm::mat4 parallelogram_transform =
     global_rotation
     * glm::mat4(glm::translate(I, glm::vec3(parallelogram_x_offset, parallelogram_y_offset, 0.0f)))
     * glm::mat4_cast(glm::quat(glm::radians(glm::vec3(0.0f, 0.0f, 0.0f))))
-	* glm::mat4(glm::scale(I, glm::vec3(global_scale / 2, global_scale / 4, 1.0f)));
+	* glm::mat4(glm::scale(I, glm::vec3(global_scale / 2, global_scale / 2, 1.0f)));
 
 
 void MyApp::drawScene() {
-  // 1) Clear buffers
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // 2) Use shader program
   Shaders->bind();
 
-  // TRIANGLES (use vec4 color with alpha = 1.0f)
+  // TRIANGLES
   glBindVertexArray(shapes[TRIANGLE].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(first_triangle_transform));
-  glUniform4f(ColorId, 1.0f, 0.0f, 0.0f, 1.0f); // Red (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)));
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(second_triangle_transform));
-  glUniform4f(ColorId, 0.0f, 1.0f, 0.0f, 1.0f); // Green (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(third_triangle_transform));
-  glUniform4f(ColorId, 0.0f, 0.0f, 1.0f, 1.0f); // Blue (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.3f, 0.6f, 1.0f, 1.0f)));
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fourth_triangle_transform));
-  glUniform4f(ColorId, 1.0f, 1.0f, 0.0f, 1.0f); // Yellow (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)));
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(fifth_triangle_transform));
-  glUniform4f(ColorId, 1.0f, 0.0f, 1.0f, 1.0f); // Magenta (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
   shapes[TRIANGLE].draw();
 
   // SQUARE
   glBindVertexArray(shapes[SQUARE].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(square_transform));
-  glUniform4f(ColorId, 0.0f, 1.0f, 1.0f, 1.0f); // Cyan (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 0.7f, 0.0f, 1.0f)));
   shapes[SQUARE].draw();
 
   // PARALLELOGRAM
   glBindVertexArray(shapes[PARALLELOGRAM].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(parallelogram_transform));
-  glUniform4f(ColorId, 1.0f, 1.0f, 1.0f, 1.0f); // White (opaque)
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)));
   shapes[PARALLELOGRAM].draw();
 
   // Unbind
