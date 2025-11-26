@@ -197,7 +197,7 @@ const float third_triangle_y_offset = -(square_diagonal / 2 - (third_triangle_he
 
 // Fourth triangle calculations
 // Variables
-const float fourth_triangle_side = triangle_side * 2/3;
+const float fourth_triangle_side = triangle_side / glm::sqrt(2);
 
 const float fourth_triangle_centroid = (fourth_triangle_side / 3);
 
@@ -267,7 +267,7 @@ const glm::mat4 fourth_triangle_transform =
     global_rotation
     * glm::mat4(glm::translate(I, glm::vec3(fourth_triangle_x_offset, fourth_triangle_y_offset, 0.0f)))
     * glm::mat4_cast(glm::quat(glm::radians(glm::vec3(0.0f, 0.0f, 180.0f))))
-	* glm::mat4(glm::scale(I, glm::vec3(global_scale * 2/3, global_scale * 2/3, 1.0f)));
+	* glm::mat4(glm::scale(I, glm::vec3(global_scale / glm::sqrt(2), global_scale / glm::sqrt(2), 1.0f)));
 
 const glm::mat4 fifth_triangle_transform =
     global_rotation
