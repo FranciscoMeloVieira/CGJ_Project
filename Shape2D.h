@@ -20,6 +20,7 @@ class Shape2D {
 		GLubyte* indices;
 		int index_count;
 		GLuint vao, vbo[2];
+		int shapeType;
 
         const GLuint POSITION = 0, COLOR = 1;
 
@@ -32,6 +33,6 @@ class Shape2D {
 		Shape2D(int shape);
         void draw();
 		void destroy();
-
+		float getSideLength();
 		GLuint get_vao() const { return vao; }
 };

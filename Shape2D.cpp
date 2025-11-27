@@ -73,16 +73,33 @@ void Shape2D::draw() {
         reinterpret_cast<GLvoid*>(0));
 }
 
+float Shape2D::getSideLength() {
+    if (shapeType == TRIANGLE) {
+        return glm::length(
+            glm::vec2(vertices[1].XYZW[0] - vertices[0].XYZW[0],
+                vertices[1].XYZW[1] - vertices[0].XYZW[1]));
+    }
+    if (shapeType == SQUARE) {
+        return glm::length(glm::vec2(vertices[1].XYZW[0] - vertices[0].XYZW[0], vertices[1].XYZW[1] - vertices[0].XYZW[1]));
+    }
+    if (shapeType == PARALLELOGRAM) {
+		return glm::length(glm::vec2(vertices[3].XYZW[0] - vertices[0].XYZW[0], vertices[3].XYZW[1] - vertices[0].XYZW[1]));
+    }
+}
+
 Shape2D::Shape2D(int shape) {
 
     if (shape == TRIANGLE) {
         triangle();
+        shapeType = TRIANGLE;
     }
     else if (shape == SQUARE) {
         square();
+        shapeType = SQUARE;
     }
     else if (shape == PARALLELOGRAM) {
         parallelogram();
+        shapeType = PARALLELOGRAM;
     }
     else {
         throw std::invalid_argument("Invalid shape type");
