@@ -139,7 +139,7 @@ xcopy /y $(SolutionDir)libraries\glfw\lib-vc2022\glfw3.dll $(OutDir)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hello-2d-world.cpp" />
+    <ClCompile Include="Tangram2D.cpp" />
     <ClCompile Include="Libraries\mgl\mglApp.cpp" />
     <ClCompile Include="Libraries\mgl\mglError.cpp" />
     <ClCompile Include="Libraries\mgl\mglShader.cpp" />

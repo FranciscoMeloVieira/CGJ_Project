@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hello-2d-world.cpp">
+    <ClCompile Include="Tangram2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Libraries\mgl\mglApp.cpp">

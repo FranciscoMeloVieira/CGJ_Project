@@ -10,7 +10,6 @@ constexpr auto PARALLELOGRAM = 2;
 
 typedef struct {
 	GLfloat XYZW[4];
-	GLfloat RGBA[4];
 } Vertex;
 
 class Shape2D {

@@ -31,10 +31,11 @@ void Shape2D::createShapeBuffers() {
 
 
 void Shape2D::triangle() {
+	// Rectangular triangle with side length 1.0f, centered at the origin
     vertices = new Vertex[3]{
-        {{-0.333333f, -0.333333f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-        {{ 0.666666f, -0.333333f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-        {{-0.333333f,  0.666666f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}
+        {{-0.333333f, -0.333333f, 0.0f, 1.0f}},
+        {{ 0.666666f, -0.333333f, 0.0f, 1.0f}},
+        {{-0.333333f,  0.666666f, 0.0f, 1.0f}}
     };
     vertex_count = 3;
     indices = new GLubyte[3]{ 0, 1, 2 };
@@ -43,11 +44,12 @@ void Shape2D::triangle() {
 }
 
 void Shape2D::square() {
+	// Square with side length 1.0f, centered at the origin
     vertices = new Vertex[4]{
-        {{-0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-        {{ 0.5f, -0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-        {{ 0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-        {{-0.5f,  0.5f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f, 1.0f}}
+        {{-0.5f, -0.5f, 0.0f, 1.0f}},
+        {{ 0.5f, -0.5f, 0.0f, 1.0f}},
+        {{ 0.5f,  0.5f, 0.0f, 1.0f}},
+        {{-0.5f,  0.5f, 0.0f, 1.0f}}
     };
     vertex_count = 4;
     indices = new GLubyte[6]{ 0, 1, 2, 0, 2, 3 };
@@ -56,11 +58,12 @@ void Shape2D::square() {
 }
 
 void Shape2D::parallelogram() {
+	// Parallelogram with side length 1.0f and base length square root of 2, centered at the origin
     vertices = new Vertex[4]{
-    {{-0.353553f, -0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{ 1.060660f, -0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{ 0.353553f,  0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-    {{-1.060660f,  0.353553f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} }
+    {{-0.353553f, -0.353553f, 0.0f, 1.0f}},
+    {{ 1.060660f, -0.353553f, 0.0f, 1.0f}},
+    {{ 0.353553f,  0.353553f, 0.0f, 1.0f}},
+    {{-1.060660f,  0.353553f, 0.0f, 1.0f}}
     };
     vertex_count = 4;
     indices = new GLubyte[6]{ 0, 1, 2, 0, 2, 3 };

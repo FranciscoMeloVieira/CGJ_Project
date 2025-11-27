@@ -1,20 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Basic Triangle rendering
-//
-// This program demonstrates fundamental Modern OpenGL concepts by rendering
-// two triangle instances directly in Clip Space. It serves as an introductory
-// example for understanding the OpenGL graphics pipeline and basic shader
-// programming.
-//
-// Key Concepts Demonstrated:
-// - Vertex Array Objects (VAOs) and Vertex Buffer Objects (VBOs)
-// - Shader program creation and management
-// - Attribute and uniform handling
-// - Basic transformation matrices
-// - Clip space rendering without model/view/projection matrices
-//
-// Copyright (c) 2013-25 by Carlos Martinho
+// Trangram Puzzle - 2D Modern OpenGL Application
+// 
+// This application renders a Tangram puzzle using OpenGL techniques.
+// The Tangram is composed of seven geometric shapes: five triangles of
+// different sizes, one square, and one parallelogram. Each shape is assigned
+// a distinct color. The shapes are transformed and positioned to form a
+// tangram in the shape of a dragon.
+// 
+// Computer Graphics for Games
+// Group 18
+// Francisco Vieira - 103360
+// Diogo Pereira - 	116314
+// 
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -25,8 +23,6 @@
 
 #include "../mgl/mgl.hpp"
 #include "Shape2D.h"
-
-
 
 
 ////////////////////////////////////////////////////////////////////////// MYAPP
@@ -79,7 +75,6 @@ void MyApp::createShaderProgram() {
 
 //////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-
 void MyApp::createBufferObjects() {
 	Shape2D triangle_shape(TRIANGLE);
 	shapes.push_back(std::move(triangle_shape));
@@ -91,7 +86,6 @@ void MyApp::createBufferObjects() {
 	shapes.push_back(std::move(parallelogram_shape));
 }
 
-
 void MyApp::destroyBufferObjects() {
     for (auto& shape : shapes) {
 		shape.destroy();
@@ -99,18 +93,28 @@ void MyApp::destroyBufferObjects() {
     glBindVertexArray(0);
 }
 
-
 ////////////////////////////////////////////////////////////////////////// SCENE
 
-
 std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
-	// Global scale for pieces
+	// Global scale for pieces. (Scales above 0.5f may cause pieces to go out of view)
     const float global_scale = 0.5f;
 
+    /* Tangram piece sizes:
+		-The square side length is half the biggest triangle side length.
+		-The parallelogram side length is also half the biggest triangle side length.
+		-The small triangles side length is half the biggest triangle side length.
+		-The medium triangle side length is the same as the biggest triangle side length divided by sqrt(2).
+	   This sizes are fixed and should not be changed to maintain the Tangram proportions.
+    */
+
+    const float square_ratio = 0.5f;
+    const float medium_triangle_ratio = 1 / glm::sqrt(2);
+	const float small_triangle_ratio = 0.5f;
+	const float parallelogram_ratio = 0.5f;
 
     // Square calculations
     // Variables
-    const float square_side = 0.5f * global_scale * shapes[SQUARE].getSideLength();
+    const float square_side = square_ratio * global_scale * shapes[SQUARE].getSideLength();
 
     const float square_diagonal = glm::sqrt(2 * glm::pow(square_side, 2));
 
@@ -121,7 +125,7 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float square_y_offset = 0.0f;
 
 
-    // First triangle calculations
+	// First triangle calculations (Magenta triangle)
     // Variables
     const float triangle_side = global_scale * shapes[TRIANGLE].getSideLength();
 
@@ -139,9 +143,9 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float first_triangle_y_offset = -(triangle_side - centroid) + square_y_offset;
 
 
-    // Second triangle calculations
+	// Second triangle calculations (Cyan triangle)
     // Variables
-    const float second_triangle_side = 0.5f * triangle_side;
+    const float second_triangle_side = small_triangle_ratio * triangle_side;
 
     const float second_triangle_hypotenuse = glm::sqrt(glm::pow(second_triangle_side, 2) * 2);
 
@@ -157,7 +161,7 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float second_triangle_y_offset = (triangle_side + (second_triangle_hypotenuse / 2 - centroid)) + first_triangle_y_offset;
 
 
-    // Third triangle calculations
+	// Third triangle calculations (Light Blue triangle)
     // Variables
     const float third_triangle_hypotenuse = triangle_hypotenuse;
 
@@ -171,9 +175,9 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float third_triangle_y_offset = -(square_diagonal / 2 - (third_triangle_height - third_triangle_centroid_diagonal)) + square_y_offset;
 
 
-    // Fourth triangle calculations
+	// Fourth triangle calculations (Purple triangle)
     // Variables
-    const float fourth_triangle_side = triangle_side / glm::sqrt(2);
+    const float fourth_triangle_side = triangle_side * medium_triangle_ratio;
 
     const float fourth_triangle_centroid = (fourth_triangle_side / 3);
 
@@ -183,7 +187,7 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float fourth_triangle_y_offset = (fourth_triangle_side - fourth_triangle_centroid) + (square_diagonal / 2) + square_y_offset;
 
 
-    // Fifth triangle calculations
+	// Fifth triangle calculations (Red triangle)
     // Variables
     const float fifth_triangle_side = second_triangle_side;
 
@@ -201,7 +205,7 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
 
     //Parallelogram
     // Variables
-	const float parallelogram_side = shapes[PARALLELOGRAM].getSideLength() * global_scale * 0.5f;
+	const float parallelogram_side = shapes[PARALLELOGRAM].getSideLength() * global_scale * parallelogram_ratio;
 
     const float parallelogram_heigth = parallelogram_side * glm::sin(glm::radians(45.0f));
 
@@ -209,7 +213,6 @@ std::unordered_map<std::string, glm::mat4> MyApp::calculations() {
     const float parallelogram_x_offset = (triangle_side - centroid / 2) + first_triangle_x_offset;
 
     const float parallelogram_y_offset = -(centroid + parallelogram_heigth / 2) + first_triangle_y_offset;
-
 
 
     // Transformation Matrices
@@ -288,42 +291,41 @@ void MyApp::drawScene() {
   // TRIANGLES
   glBindVertexArray(shapes[TRIANGLE].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("first_triangle_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f))); // Magenta
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("second_triangle_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 1.0f, 1.0f))); // Cyan
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("third_triangle_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.3f, 0.6f, 1.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.3f, 0.6f, 1.0f, 1.0f))); // Light Blue
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("fourth_triangle_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.5f, 0.0f, 0.5f, 1.0f))); // Purple
   shapes[TRIANGLE].draw();
 
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("fifth_triangle_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f))); // Red
   shapes[TRIANGLE].draw();
 
   // SQUARE
   glBindVertexArray(shapes[SQUARE].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("square_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 0.7f, 0.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(0.0f, 0.7f, 0.0f, 1.0f))); // Green
   shapes[SQUARE].draw();
 
   // PARALLELOGRAM
   glBindVertexArray(shapes[PARALLELOGRAM].get_vao());
   glUniformMatrix4fv(MatrixId, 1, GL_FALSE, glm::value_ptr(matrices.at("parallelogram_transform")));
-  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f)));
+  glUniform4fv(ColorId, 1, glm::value_ptr(glm::vec4(1.0f, 0.5f, 0.0f, 1.0f))); // Orange
   shapes[PARALLELOGRAM].draw();
 
   // Unbind
   Shaders->unbind();
   glBindVertexArray(0);
 }
-
 
 ////////////////////////////////////////////////////////////////////// CALLBACKS
 
